@@ -88,6 +88,25 @@ describe('App', () => {
       expect(response.statusCode).toBe(202);
     });
 
+    test('adds a template mail whose content is null, as SendGrid does', async () => {
+
+      const mailHandlerStub = sinon.createStubInstance(MailHandler);
+      const sut = setupExpressApp(mailHandlerStub, { enabled: false }, 'sonic', rateLimitConfiguration);
+
+      const response = await request(sut)
+        .post('/v3/mail/send')
+        .send({
+          personalizations: [{to: [{email: 'to@example.com'}]}],
+          from: {email: 'from@example.com'},
+          content: null,
+          template_id: 'd-123',
+        })
+        .set('Authorization', 'Bearer sonic');
+
+      expect(response.statusCode).toBe(202);
+      expect(mailHandlerStub.addMail.calledOnce).toBe(true);
+    });
+
     test('responds with x-message-id header', async () => {
 
       const mailHandlerStub = sinon.createStubInstance(MailHandler);
