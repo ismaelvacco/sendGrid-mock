@@ -30,6 +30,16 @@ describe('TemplateHandler', () => {
       expect(typeof body.versions[0].subject).toBe('string');
       expect(httpClient.get).not.toHaveBeenCalled();
     });
+
+    test('uses SendGrid\'s timestamp format, which clients parse', async () => {
+
+      const sut = new TemplateHandler({httpClient: {get: jest.fn()}});
+
+      const {body} = await sut.getTemplate('d-123');
+
+      expect(body.updated_at).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+      expect(body.versions[0].updated_at).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
+    });
   });
 
   describe('with an api key', () => {
