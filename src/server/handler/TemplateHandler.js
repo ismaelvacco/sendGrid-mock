@@ -12,11 +12,14 @@ const REQUEST_TIMEOUT_IN_MS = 5000;
 // SendGrid template ids look like 'd-<hex>' (dynamic) or a uuid (legacy).
 const VALID_TEMPLATE_ID = /^[\w-]+$/;
 
+// SendGrid's own timestamp format for templates, e.g. '2021-04-28 13:12:46' (UTC).
+const sendGridDateTime = (date) => date.toISOString().slice(0, 19).replace('T', ' ');
+
 const stubTemplate = (templateId) => ({
   id: templateId,
   name: `Mock template ${templateId}`,
   generation: 'dynamic',
-  updated_at: new Date().toISOString(),
+  updated_at: sendGridDateTime(new Date()),
   versions: [
     {
       id: 'mock-version',
@@ -24,7 +27,7 @@ const stubTemplate = (templateId) => ({
       active: 1,
       name: 'Mock version',
       subject: 'Mock subject',
-      updated_at: new Date().toISOString(),
+      updated_at: sendGridDateTime(new Date()),
     },
   ],
 });
