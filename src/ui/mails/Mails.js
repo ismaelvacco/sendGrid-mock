@@ -171,7 +171,10 @@ class Mails extends React.Component {
                   headerStyle: { textAlign: 'left' },
                   style: { 'whiteSpace': 'unset' },
                   minWidth: 200,
+                  // a personalization's subject overrides the mail's, as in SendGrid
                   accessor: mail => mail.subject
+                    || (mail.personalizations || []).map(p => p.subject).find(Boolean)
+                    || ''
                 },
                 {
                   Header: 'to',

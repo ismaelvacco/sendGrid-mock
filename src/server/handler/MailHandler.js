@@ -53,16 +53,20 @@ const mailSentTo = (mail, to) => {
 };
 
 const mailContainSubject = (mail, subject) => {
-  
-  // Mails sent using a template may not have a subject.
-  const actualSubject = mail.subject ?? '';
-  
+
+  // Mails sent using a template may not have a subject. A personalization's subject
+  // overrides the mail's, as in SendGrid, so those are searched too.
+  const actualSubjects = [
+    mail.subject,
+    ...(Array.isArray(mail.personalizations) ? mail.personalizations.map(p => p?.subject) : []),
+  ].filter(s => typeof s === 'string');
+
   if (subject.startsWith('%') && subject.endsWith('%')) {
-    const searchSubject = subject.substring(1, subject.length - 1);
-    return actualSubject.toLowerCase().includes(searchSubject.toLowerCase());
+    const searchSubject = subject.substring(1, subject.length - 1).toLowerCase();
+    return actualSubjects.some(s => s.toLowerCase().includes(searchSubject));
   } else {
-    return actualSubject.toLowerCase() === subject.toLowerCase();
-  }  
+    return actualSubjects.some(s => s.toLowerCase() === subject.toLowerCase());
+  }
 };
 
 const mailSentAfter = (mail, dateTime) => {
