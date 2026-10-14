@@ -17,6 +17,8 @@ const jsonSchema = {
     properties: {
       content: {
         type: 'array',
+        // SendGrid accepts a null content alongside a template_id.
+        nullable: true,
         items: {
           type: 'object',
           properties: {
