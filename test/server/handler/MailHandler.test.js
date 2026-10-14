@@ -167,6 +167,25 @@ describe('MailHandler', () => {
         );
       });
 
+      test('filter mails on the subject of a personalization', () => {
+
+        const sut = new MailHandler();
+
+        const mail = {
+          'personalizations': [{'to': [{'email': 'sonic@hedgehog.com'}], 'subject': 'Important notice'}],
+          'template_id': 'd-123',
+        };
+
+        const addedMailDateTime = new Date('2020-01-01');
+        withMockedDate(addedMailDateTime, () => {
+          sut.addMail(testMail);
+          sut.addMail(mail);
+        });
+
+        expect(sut.getMails({subject: 'important notice'})).toStrictEqual([{...mail, datetime: addedMailDateTime}]);
+        expect(sut.getMails({subject: '%notice%'})).toStrictEqual([{...mail, datetime: addedMailDateTime}]);
+      });
+
       test('filter mails sent with given subject', () => {
 
         const sut = new MailHandler();
